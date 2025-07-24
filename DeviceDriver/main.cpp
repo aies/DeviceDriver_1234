@@ -1,5 +1,6 @@
 #include "gmock/gmock.h"
 #include "device_driver.h"
+#include <vector>
 
 using namespace testing;
 
@@ -11,13 +12,14 @@ public:
 
 TEST(DeviceDriver, ReadFromHW) {
 	Flash_Mock mockFlash;
+	long testCase = 0x8;
 
-	EXPECT_CALL(mockFlash, read(0x8))
+	EXPECT_CALL(mockFlash, read(testCase))
 		.Times(5)
-		.WillRepeatedly(Return(0x8));
+		.WillRepeatedly(Return(testCase));
 
 	DeviceDriver driver{ &mockFlash };
-	int data = driver.read((long)0x8);
+	int data = driver.read((long)testCase);
 }
 
 
