@@ -21,12 +21,21 @@ public:
 TEST_F(DeviceDriverFixture, ReadFromHW) {
 	EXPECT_CALL(mockFlash, read(testAddr))
 		.Times(5)
-		.WillRepeatedly(Return(testAddr));
+		.WillRepeatedly(Return(testData));
 
-	DeviceDriver driver{ &mockFlash };
-	int data = driver.read((long)testAddr);
+	EXPECT_EQ(testData, driver.read((long)testAddr));
 }
 
+TEST_F(DeviceDriverFixture, ReadFromHW_EXP) {
+	EXPECT_CALL(mockFlash, read(testAddr))
+		.WillOnce(Return(0xA))
+		.WillOnce(Return(0xA))
+		.WillOnce(Return(0xA))
+		.WillOnce(Return(0xA))
+		.WillOnce(Return(0xB));
+
+	EXPECT_THROW(driver.read(testAddr), ReadFailException);
+}
 
 TEST_F(DeviceDriverFixture, WriteFromHW) {
 	EXPECT_CALL(mockFlash, read(testAddr))
@@ -38,7 +47,6 @@ TEST_F(DeviceDriverFixture, WriteFromHW) {
 	driver.write(testAddr, testData);
 }
 
-
 TEST_F(DeviceDriverFixture, WriteFromHW_FAIL) {
 	EXPECT_CALL(mockFlash, read(testAddr))
 		.WillRepeatedly(Return(0x0));
@@ -46,7 +54,7 @@ TEST_F(DeviceDriverFixture, WriteFromHW_FAIL) {
 	EXPECT_CALL(mockFlash, write(testAddr, testData))
 		.Times(0);
 
-	driver.write(testAddr, testData);
+	EXPECT_THROW(driver.write(testAddr, testData), WriteFailException);
 }
 
 int main() {
