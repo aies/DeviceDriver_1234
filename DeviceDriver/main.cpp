@@ -31,6 +31,9 @@ TEST(DeviceDriver, WriteFromHW) {
 	EXPECT_CALL(mockFlash, read(testCase))
 		.WillRepeatedly(Return(0xff));
 
+	EXPECT_CALL(mockFlash, write(testCase, testCase2))
+		.Times(1);
+
 	DeviceDriver driver{ &mockFlash };
 	driver.write(testCase, testCase2);
 }
