@@ -10,32 +10,32 @@ public:
 	MOCK_METHOD(void, write, (long address, unsigned char data), (override));
 };
 
-TEST(DeviceDriver, ReadFromHW) {
+class DeviceDriverFixture : public Test {
+public:
 	Flash_Mock mockFlash;
-	long testCase = 0x8;
+	DeviceDriver driver{ &mockFlash };
+	long testAddr = 0x8;
+	int  testData = 0x8;
+};
 
-	EXPECT_CALL(mockFlash, read(testCase))
+TEST_F(DeviceDriverFixture, ReadFromHW) {
+	EXPECT_CALL(mockFlash, read(testAddr))
 		.Times(5)
-		.WillRepeatedly(Return(testCase));
+		.WillRepeatedly(Return(testAddr));
 
 	DeviceDriver driver{ &mockFlash };
-	int data = driver.read((long)testCase);
+	int data = driver.read((long)testAddr);
 }
 
 
-TEST(DeviceDriver, WriteFromHW) {
-	Flash_Mock mockFlash;
-	long testCase = 0x8;
-	int  testCase2 = 0x8;
-
-	EXPECT_CALL(mockFlash, read(testCase))
+TEST_F(DeviceDriverFixture, WriteFromHW) {
+	EXPECT_CALL(mockFlash, read(testAddr))
 		.WillRepeatedly(Return(0xff));
 
-	EXPECT_CALL(mockFlash, write(testCase, testCase2))
+	EXPECT_CALL(mockFlash, write(testAddr, testData))
 		.Times(1);
 
-	DeviceDriver driver{ &mockFlash };
-	driver.write(testCase, testCase2);
+	driver.write(testAddr, testData);
 }
 
 int main() {
