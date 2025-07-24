@@ -23,6 +23,18 @@ TEST(DeviceDriver, ReadFromHW) {
 }
 
 
+TEST(DeviceDriver, WriteFromHW) {
+	Flash_Mock mockFlash;
+	long testCase = 0x8;
+	int  testCase2 = 0x8;
+
+	EXPECT_CALL(mockFlash, read(testCase))
+		.WillRepeatedly(Return(0xff));
+
+	DeviceDriver driver{ &mockFlash };
+	driver.write(testCase, testCase2);
+}
+
 int main() {
 	::testing::InitGoogleMock();
 	return RUN_ALL_TESTS();
