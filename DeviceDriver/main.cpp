@@ -38,6 +38,17 @@ TEST_F(DeviceDriverFixture, WriteFromHW) {
 	driver.write(testAddr, testData);
 }
 
+
+TEST_F(DeviceDriverFixture, WriteFromHW_FAIL) {
+	EXPECT_CALL(mockFlash, read(testAddr))
+		.WillRepeatedly(Return(0x0));
+
+	EXPECT_CALL(mockFlash, write(testAddr, testData))
+		.Times(0);
+
+	driver.write(testAddr, testData);
+}
+
 int main() {
 	::testing::InitGoogleMock();
 	return RUN_ALL_TESTS();
